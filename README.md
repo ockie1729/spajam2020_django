@@ -46,6 +46,7 @@ pip install -r requirements.txt
 ```
 
 3. Djangoのsecret keyを受け取り，配置
+mofumofu1729(okimoto)に言ってください！
 
 ### Djangoを起動
 1. 起動
