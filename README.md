@@ -3,7 +3,7 @@
 ## Getting started
 
 
-### Pythonのインストール
+### Python 3.8.0 のインストール
 以下，`ubuntu 18` と `bash` を想定しています．
 その他の場合は，pyenvの[README](https://github.com/pyenv/pyenv)を参照してください．
 
@@ -46,6 +46,7 @@ pip install -r requirements.txt
 ```
 
 3. Djangoのsecret keyを受け取り，配置
+
 mofumofu1729(okimoto)に言ってください！
 
 ### Djangoを起動
