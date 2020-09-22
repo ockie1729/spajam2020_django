@@ -45,9 +45,10 @@ pyenv global 3.8.0
 pip install -r requirements.txt
 ```
 
-3. Djangoのsecret keyを受け取り，配置
-
-mofumofu1729(okimoto)に言ってください！
+3. Djangoで用いるSECRET_KEYを環境変数 `DJANGO_SECRET_KEY` に設定
+```
+export DJANGO_SECRET_KEY=<sectet key>
+```
 
 ### Djangoを起動
 1. 起動
