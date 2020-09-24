@@ -60,3 +60,11 @@ python manage.py runserver
 ```
 curl localhost:8000/api/v1/
 ```
+
+
+
+docker build -t spajam-2020:latest .
+
+
+docker run -e DJANGO_SECRET_KEY='5#%bl7egp&mmj&v@n773i%x+#ui7+ylezj7267m$ec-b+s_937' -p 80:80 spajam-2020:latest
+docker run -e DJANGO_SECRET_KEY=xxxxx -it spajam-2020:latest /bin/sh
