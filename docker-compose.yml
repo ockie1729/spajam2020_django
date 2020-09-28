@@ -1,0 +1,14 @@
+version: "3.7"
+services:
+  spajam-db:
+    image: mysql:8.0.20
+    environment:
+      MYSQL_ROOT_PASSWORD: spajam
+      MYSQL_DATABASE: spajam
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - 3306:3306
+    volumes:
+      - ./sql/spajam.ddl:/docker-entrypoint-initdb.d/0.sql
+      - ./sql/master.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./sql/data.sql:/docker-entrypoint-initdb.d/2.sql

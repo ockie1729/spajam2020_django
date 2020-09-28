@@ -68,3 +68,11 @@ curl localhost:8000/api/v1/
 docker build -t spajam-2020:latest .
 docker run -d -e DJANGO_SECRET_KEY='DAMMY-VALUE' -p 80:80 spajam-2020:latest
 ```
+
+
+### MySQL サーバーを立てる
+
+```
+docker-compose up -d
+mysql --host 127.0.0.1 --port 3306 -u root -p    # pw spajam
+```
