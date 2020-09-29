@@ -1,5 +1,8 @@
-from django.http import HttpResponse
+from django.http import JsonResponse
+from .models import GirlsLove
 
 
 def index(request):
-    return HttpResponse('hello world')
+    girls = GirlsLove.objects.all()
+
+    return JsonResponse(data=girls)
