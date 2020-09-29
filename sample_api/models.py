@@ -1,3 +1,6 @@
 from django.db import models
 
-# Create your models here.
+
+class GirlsLove(models.Model):
+    follower_name = models.CharField(max_length=50)
+    followee_name = models.CharField(max_length=50)
