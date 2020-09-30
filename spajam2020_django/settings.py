@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'api_server.apps.ApiServerConfig',
     'watson.apps.WatsonConfig',
+    'sample_api.apps.SampleApiConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
