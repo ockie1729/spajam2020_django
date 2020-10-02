@@ -20,5 +20,6 @@ urlpatterns = [
     path('api/v1/', include('api_server.urls')),
     path('watson/', include('watson.urls')),
     path('sample_api/', include('sample_api.urls')),
+    path('line/', include('line_chat.urls')),
     path('admin/', admin.site.urls),
 ]
