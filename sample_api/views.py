@@ -1,7 +1,6 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import GirlsLove
-import json
 
 
 @csrf_exempt
@@ -21,14 +20,6 @@ def index(request):
         response["content"] = content
         return JsonResponse(data=response)
     elif request.method == 'POST':
-        request_json = json.loads(request.body)
-
-        girls_love = GirlsLove()
-        girls_love.follower_name = request_json['follower_name']
-        girls_love.followee_name = request_json['followee_name']
-        girls_love.save()
-
-        return JsonResponse(data={"message":
-                                  "successfully added a new girls love"})
+        return JsonResponse(data={"message": "nothing done"})
     else:
         return JsonResponse(data={"message": "unexpetected http method"}, status=400)
