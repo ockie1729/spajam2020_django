@@ -21,3 +21,4 @@ class Text(models.Model):
     watson_response = models.TextField()
     tokenized_text = models.TextField()
     created_at = models.DateTimeField()
+    webrtc_room_id = models.CharField(max_length=50, default='')
