@@ -112,3 +112,18 @@ def topic_register_text(request):
     else:
         return JsonResponse(data={"message": "only POST is acceptalbe"},
                             status=400)
+
+
+@csrf_exempt
+def user_add_twitter_id(request):
+    if request.method == 'POST':
+        request_json = json.loads(request.body)
+        uuid = request_json["uuid"]
+        twitter_id = request_json["twitter_id"]
+        user = User.objects.get(uuid=uuid)
+        user.twitter_id = twitter_id
+        user.save()
+
+        return JsonResponse(data={"message": "successfully added a twitter_id"})
+    else:
+        return JsonResponse(data={"message": "only POST is acceptalbe"}, status=400)
