@@ -1,43 +1,20 @@
 import json
 import os
-import copy
 import datetime
-
-import requests
-from requests.auth import HTTPBasicAuth
 
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import json
-from .models import User, Room
-import os
+
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
 
+from asari.api import Sonar
+
 from .models import User, Text
 
-WATSON_CONFIG = {
-    'user': 'apikey',
-    'pass': os.environ['WATSON_PASSWORD'],
-    'headers': {'Content-type': 'application/json'},
-    'url': 'https://api.jp-tok.natural-language-understanding.watson.cloud.ibm.com/instances/8674a94a-20ad-42ed-b0ce-3321526d6231/v1/analyze',
-    'params': {'version': '2018-11-16'},
-    'data': {
-        "text": "",
-        "features": {
-            "categories": {},
-            "keywords": {
-                "emotion": True
-            },
-            "entities": {},
-            "concepts": {
-                "limit": 3
-            },
-        },
-    }
-}
 
 line_bot_api = LineBotApi(os.environ['LINE_TOKEN'])
+sonar = Sonar()  # 極性分析器
 
 
 @csrf_exempt
@@ -81,24 +58,13 @@ def topic_register_text(request):
         request_uuid = request_json['uuid']
         request_is_relax_str = request_json['is_relax']  # TODO 現在はまだ使用せず
 
-        # Watson APIを呼び出し
-        request_watson_config = copy.deepcopy(WATSON_CONFIG)
-        request_watson_config['data']["text"] = request_text
-
-        res = requests.post(request_watson_config['url'],
-                            params=request_watson_config['params'],
-                            data=json.dumps(request_watson_config['data']),
-                            headers=request_watson_config['headers'],
-                            auth=HTTPBasicAuth(request_watson_config['user'],
-                                               request_watson_config['pass']))
-        watson_results = json.loads(res.text)
-
-        # TODO 形態素解析を実行
+        # asariで極性分析を実行
+        asari_result = sonar.ping(text=request_text)
 
         # Textモデルを作成し，値を保存
         new_text = Text()
         new_text.text = request_text
-        new_text.watson_response = json.dumps(watson_results)
+        new_text.watson_response = json.dumps(asari_result)  # TODO フィールド名を修正
         new_text.created_at = api_call_time
         new_text.uuid = request_uuid
         new_text.webrtc_room_id = request_webrtc_room_id
@@ -107,7 +73,7 @@ def topic_register_text(request):
 
         return JsonResponse(
             data={"message": "successfully registered a text message",
-                  "watson_response": watson_results}
+                  "watson_response": asari_result}  # TODO key名を修正
         )
     else:
         return JsonResponse(data={"message": "only POST is acceptalbe"},

@@ -15,3 +15,13 @@ pytz==2020.1
 requests==2.24.0
 sqlparse==0.3.1
 urllib3==1.25.10
+asari==0.0.4
+Janome==0.3.7
+joblib==0.17.0
+numpy==1.19.2
+pandas==1.1.2
+python-dateutil==2.8.1
+scikit-learn==0.23.2
+scipy==1.5.2
+six==1.15.0
+threadpoolctl==2.1.0
