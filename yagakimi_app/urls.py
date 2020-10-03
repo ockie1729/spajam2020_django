@@ -9,4 +9,5 @@ urlpatterns = [
     path('line/push', views.push_room_id_to_line, name='push_room_id_to_line'),
     path('topic/register_text', views.topic_register_text,
          name='topic_register_text'),
+    path('topic/relaxing_topics', views.calculate, name='calculate')
 ]
