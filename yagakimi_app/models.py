@@ -22,3 +22,4 @@ class Text(models.Model):
     tokenized_text = models.TextField()
     created_at = models.DateTimeField()
     webrtc_room_id = models.CharField(max_length=50, default='')
+    is_relax = models.BooleanField(default=False)
