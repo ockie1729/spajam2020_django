@@ -61,12 +61,13 @@ def push_room_id_to_line(request):
 
     if request.method == 'POST':
         request_json = json.loads(request.body)
-        line_messsage = request_json["line_messsage"]
+        line_message = request_json["line_message"]
         line_bot_api.push_message(
-            os.environ['ROOM_ID'], TextSendMessage(text=line_messsage))
+            os.environ['ROOM_ID'], TextSendMessage(text=line_message))
         return JsonResponse(data={"message": "successfully pushed line message"})
     else:
         return JsonResponse(data={"message": "only POST is acceptalbe"}, status=400)
+
 
 def topic_register_text(request):
 
