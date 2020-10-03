@@ -69,6 +69,7 @@ def push_room_id_to_line(request):
         return JsonResponse(data={"message": "only POST is acceptalbe"}, status=400)
 
 
+@csrf_exempt
 def topic_register_text(request):
 
     if request.method == 'POST':
