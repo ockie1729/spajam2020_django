@@ -120,7 +120,11 @@ def user_add_twitter_id(request):
         request_json = json.loads(request.body)
         uuid = request_json["uuid"]
         twitter_id = request_json["twitter_id"]
-        user = User.objects.get(uuid=uuid)
+        try: 
+           user = User.objects.get(uuid=uuid)
+        except Exception: 
+           return JsonResponse(data={"message": "internal server error"},
+                               status=599)
         user.twitter_id = twitter_id
         user.save()
 
