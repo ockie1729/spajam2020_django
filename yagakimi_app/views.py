@@ -86,7 +86,7 @@ def topic_register_text(request):
         new_text.save()
 
         return JsonResponse(
-            data={"message": "suggessfully registered a text message",
+            data={"message": "successfully registered a text message",
                   "watson_response": watson_results}
         )
     else:
