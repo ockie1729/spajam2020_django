@@ -18,3 +18,5 @@ def user_create(request):
         user.password = ""
         user.save()
         return JsonResponse(data={"message": "successfully added a new user"})
+    else:
+        return JsonResponse(data={"message": "only POST is acceptalbe"}, status=400)
