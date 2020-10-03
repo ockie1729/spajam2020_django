@@ -81,7 +81,7 @@ def topic_register_text(request):
         new_text.watson_response = json.dumps(watson_results)
         new_text.created_at = api_call_time
         new_text.uuid = request_uuid
-        # new_text.webrtc_room_id = request_webrtc_room_id  # TODO カラムが追加されたら実装
+        new_text.webrtc_room_id = request_webrtc_room_id
         # new_text.tokenized_text  # TODO 未実装
         new_text.save()
 
