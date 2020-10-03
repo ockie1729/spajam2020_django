@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'api_server.apps.ApiServerConfig',
     'watson.apps.WatsonConfig',
     'sample_api.apps.SampleApiConfig',
+    'yagakimi_app.apps.YagakimiAppConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
