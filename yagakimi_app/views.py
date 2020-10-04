@@ -124,7 +124,7 @@ def user_add_twitter_id(request):
             user = User.objects.get(uuid=uuid)
         except Exception:
             return JsonResponse(data={"message": "internal server error"},
-                                status=599)
+                                status=500)
         user.twitter_id = twitter_id
         user.save()
 
