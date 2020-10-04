@@ -86,14 +86,42 @@ def user_add_twitter_id(request):
         request_json = json.loads(request.body)
         uuid = request_json["uuid"]
         twitter_id = request_json["twitter_id"]
-        try: 
-           user = User.objects.get(uuid=uuid)
-        except Exception: 
-           return JsonResponse(data={"message": "internal server error"},
-                               status=599)
+        try:
+            user = User.objects.get(uuid=uuid)
+        except Exception:
+            return JsonResponse(data={"message": "internal server error"},
+                                status=500)
         user.twitter_id = twitter_id
         user.save()
 
         return JsonResponse(data={"message": "successfully added a twitter_id"})
+    else:
+        return JsonResponse(data={"message": "only POST is acceptalbe"}, status=400)
+
+
+@csrf_exempt
+def calculate(request):
+    if request.method == 'POST':
+        request_json = json.loads(request.body)
+        webrtc_room_id = request_json["webrtc_room_id"]
+        all_texts = Text.objects.all().filter(webrtc_room_id=webrtc_room_id)
+
+        relax_count = 0
+        all_count = len(all_texts)
+
+        # 現状は極めてナイーブな実装である
+        # relaxing_rate→全件に対する、is_relax = Trueの割合
+        # relaxing_topics → is_ralaxのときのtextの全部もしくは一部の集合
+        relaxing_topics = []
+        for text in all_texts:
+            if text.is_relax:
+                relaxing_topics.append(text.text)
+                relax_count += 1
+        relaxing_rate = relax_count/all_count
+
+        if len(relaxing_topics) == 0:  # 現状は、いい感じのトピックがない場合はデフォルト値を返す
+            relaxing_topics.append("お天気")
+
+        return JsonResponse(data={"relaxing_topics": relaxing_topics, "relax_rate": relaxing_rate})
     else:
         return JsonResponse(data={"message": "only POST is acceptalbe"}, status=400)
