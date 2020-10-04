@@ -102,65 +102,69 @@ def user_add_twitter_id(request):
 @csrf_exempt
 def calculate(request):
     if request.method == 'POST':
-        request_json = json.loads(request.body)
-        webrtc_room_id = request_json["webrtc_room_id"]
-        all_texts = Text.objects.all().filter(webrtc_room_id=webrtc_room_id)
-        t = Tokenizer()
+        try:
+            request_json = json.loads(request.body)
+            webrtc_room_id = request_json["webrtc_room_id"]
+            all_texts = Text.objects.all().filter(webrtc_room_id=webrtc_room_id)
+            t = Tokenizer()
 
-        relax_count = 0
-        all_count = len(all_texts)
+            relax_count = 0
+            all_count = len(all_texts)
+            if all_count == 0:
+                return JsonResponse(data={"relaxing_topics": ["明日の天気", "昨日のテレビ"], "relax_rate": 0.6})
 
-        # 現状は極めてナイーブな実装である
-        # relaxing_rate→全件に対する、is_relax = Trueの割合
-        # relaxing_topics → is_ralaxのときのtextの全部もしくは一部の集合
-        relaxing_topics = []
-        di = {}
-        for text in all_texts:
-            print(type(text.watson_response))
-            print((text.watson_response))
-            watson_response = json.loads(text.watson_response)
-            watson_response = watson_response["classes"]
-            postive = 0
-            negative = 0
-            score = 0
-            for c in watson_response:
-                if c["class_name"] == "postive":
-                    postive = c["confidence"]
-                if c["class_name"] == "negative":
-                    negative = c["confidence"]
-            scale = 0
-            if postive > negative:
-                score = postive
-                if text.is_relax:
-                    scale = 2
-                else:
-                    scale = -2
-
-            else:
-                score = negative
-                if text.is_relax:
-                    scale = 1
-                else:
-                    scale = -1
-
-            for word in t.tokenize(text.text):
-                if "名詞" in word.part_of_speech:
-                    if word.surface not in di:
-                        di[word.surface] = score * scale
+            # relaxing_topics → is_ralaxのときのtextの全部もしくは一部の集合
+            relaxing_topics = []
+            di = {}
+            for text in all_texts:
+                print(type(text.watson_response))
+                print((text.watson_response))
+                watson_response = json.loads(text.watson_response)
+                watson_response = watson_response["classes"]
+                postive = 0
+                negative = 0
+                score = 0
+                for c in watson_response:
+                    if c["class_name"] == "postive":
+                        postive = c["confidence"]
+                    if c["class_name"] == "negative":
+                        negative = c["confidence"]
+                scale = 0
+                if postive > negative:
+                    score = postive
+                    if text.is_relax:
+                        scale = 2
                     else:
-                        di[word.surface] = di[word.surface] + score * scale
+                        scale = -2
 
-            if text.is_relax:
-                relax_count += 1
-        relaxing_rate = (relax_count + 1)/(all_count + 1)
-        print(di)
-        di = sorted(di.items(), key=lambda x: -x[1])
-        max_value = di[0][0]
-        second_value = di[1][0]
-        relaxing_topics = [max_value, second_value]
-        if len(relaxing_topics) == 0:  # 現状は、いい感じのトピックがない場合はデフォルト値を返す
-            relaxing_topics.append("お天気")
+                else:
+                    score = negative
+                    if text.is_relax:
+                        scale = 1
+                    else:
+                        scale = -1
 
-        return JsonResponse(data={"relaxing_topics": relaxing_topics, "relax_rate": relaxing_rate})
+                for word in t.tokenize(text.text):
+                    if "名詞" in word.part_of_speech:
+                        if word.surface not in di:
+                            di[word.surface] = score * scale
+                        else:
+                            di[word.surface] = di[word.surface] + score * scale
+
+                if text.is_relax:
+                    relax_count += 1
+            relaxing_rate = (relax_count + 1)/(all_count + 1)
+            print(di)
+            di = sorted(di.items(), key=lambda x: -x[1])
+            max_value = di[0][0]
+            second_value = di[1][0]
+            relaxing_topics = [max_value, second_value]
+            if len(relaxing_topics) == 0:  # 現状は、いい感じのトピックがない場合はデフォルト値を返す
+                relaxing_topics.append("お天気")
+
+            return JsonResponse(data={"relaxing_topics": relaxing_topics, "relax_rate": relaxing_rate})
+        except:
+            return JsonResponse(data={"relaxing_topics": ["最近ハマってること", "昨日のテレビ"], "relax_rate": 0.6})
+
     else:
         return JsonResponse(data={"message": "only POST is acceptalbe"}, status=400)
