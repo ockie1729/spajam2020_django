@@ -1,7 +1,7 @@
 import json
 import os
 import datetime
-
+from janome.tokenizer import Tokenizer
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -105,6 +105,7 @@ def calculate(request):
         request_json = json.loads(request.body)
         webrtc_room_id = request_json["webrtc_room_id"]
         all_texts = Text.objects.all().filter(webrtc_room_id=webrtc_room_id)
+        t = Tokenizer()
 
         relax_count = 0
         all_count = len(all_texts)
@@ -113,12 +114,50 @@ def calculate(request):
         # relaxing_rate→全件に対する、is_relax = Trueの割合
         # relaxing_topics → is_ralaxのときのtextの全部もしくは一部の集合
         relaxing_topics = []
+        di = {}
         for text in all_texts:
-            if text.is_relax:
-                relaxing_topics.append(text.text)
-                relax_count += 1
-        relaxing_rate = relax_count/all_count
+            print(type(text.watson_response))
+            print((text.watson_response))
+            watson_response = json.loads(text.watson_response)
+            watson_response = watson_response["classes"]
+            postive = 0
+            negative = 0
+            score = 0
+            for c in watson_response:
+                if c["class_name"] == "postive":
+                    postive = c["confidence"]
+                if c["class_name"] == "negative":
+                    negative = c["confidence"]
+            scale = 0
+            if postive > negative:
+                score = postive
+                if text.is_relax:
+                    scale = 2
+                else:
+                    scale = -2
 
+            else:
+                score = negative
+                if text.is_relax:
+                    scale = 1
+                else:
+                    scale = -1
+
+            for word in t.tokenize(text.text):
+                if "名詞" in word.part_of_speech:
+                    if word.surface not in di:
+                        di[word.surface] = score * scale
+                    else:
+                        di[word.surface] = di[word.surface] + score * scale
+
+            if text.is_relax:
+                relax_count += 1
+        relaxing_rate = (relax_count + 1)/(all_count + 1)
+        print(di)
+        di = sorted(di.items(), key=lambda x: -x[1])
+        max_value = di[0][0]
+        second_value = di[1][0]
+        relaxing_topics = [max_value, second_value]
         if len(relaxing_topics) == 0:  # 現状は、いい感じのトピックがない場合はデフォルト値を返す
             relaxing_topics.append("お天気")
 
