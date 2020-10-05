@@ -22,6 +22,10 @@ def user_create(request):
 
     if request.method == 'POST':
         request_json = json.loads(request.body)
+        uuid = request_json["uuid"]
+        if User.objects.filter(uuid=uuid).count() != 0:
+            return JsonResponse(data={"message": "This UUID is already registered."})
+
         user = User()
         user.uuid = request_json["uuid"]
         user.name = ""
